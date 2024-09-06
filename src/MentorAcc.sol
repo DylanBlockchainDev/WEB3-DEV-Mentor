@@ -11,7 +11,7 @@ contract MentorAcc {
         string bioMessage; //a message or description of mentor and or value provided by mentor.
         address[] OpenSlotsForMentees; // each mentor is limited to max 10 mentees.
     }
-    
+
     mapping(address => Mentor) public mentors;
     uint256 public constant MAX_MENTEES_PER_MENTOR = 10;
 
@@ -39,7 +39,7 @@ contract MentorAcc {
     modifier onlyMentor() {
         require(msg.sender == mentors[msg.sender].mentorsAddress, "Caller must be mentor");
         _;
-    }    
+    }
 
     function confirmMentee(address menteesAddress) public onlyMentor {
         // mentor will pass in mentee’s address to be confirmed.

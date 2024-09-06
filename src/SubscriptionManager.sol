@@ -6,11 +6,9 @@ import {MenteeAcc} from "./MenteeAcc.sol";
 import {SubscriptionPlans} from "./SubscriptionPlans.sol";
 
 contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
-    // creates  subscript plans code
-
     // helper function
     function checkAddressInArray(address[] memory array, address targetAddress) public pure returns (bool) {
-        for (uint i = 0; i < array.length; i++) {
+        for (uint256 i = 0; i < array.length; i++) {
             if (array[i] == targetAddress) {
                 return true;
             }
@@ -29,8 +27,8 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
     }
 
     // mentorship is created which is needed for mentee buying a subscription.
-    function createMentorship( address menteesAddress, address mentorsAddress)
-    internal
+    function createMentorship(address menteesAddress, address mentorsAddress)
+        internal
         onlyMentee
         returns (bool /*bool(there is a mentorship)*/ )
     {
@@ -47,26 +45,41 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
         return true; // mentorship exists.
     }
 
-    // mentee deposits money, and buys specific plan // will have to redesign the SubscriptionManage.sol contract
-    function menteeBuysSubscription(uint256 amount) internal {
-        // require(some check to make sure caller is owner of account being funded); //might not be needed
-        // fundMenteesWallet(amount);//might not be needed
-
-        // payment logic takes place here, this is where the finer details happen such as when the payment happens and how much should be paid, this depends on the specific plan. That will be created on a separate contract.
-        // Payment Logic!!!;buy the subscription, and split money. call the payMentor() function;
+    // mentee buys specific plan
+    function menteeBuysSubscription(uint256 planId) internal onlyMentee {
+        subscribe(planId);
     }
 
-    //calls the menteeBuysSubscription(uint256 amount) & createMentorship(“mentor’s address)  functions
-    function BuySubscriptionAndCreateMentorship( /* amount, mentorsAddress */ ) public /*someOnlyMenteeModifier()*/ {
-        // createMentorship(mentors address);
-        // if(createMentorship != true) revert;
-        // menteeBuysSubscription(amount);
-    }
+    function cancelSubscriptionAndEndMentorship(uint256 planId, address menteesAddress, address mentorsAddress)
+        internal
+    {
+        require(mentees[menteesAddress].hasMentor == true, "Menotrship already doesn't exist");
+        require(callCheckAddressInArray(mentorsAddress, menteesAddress), "This is already not mentee's mentor");
+        require(mentees[menteesAddress].mentorsAddress == mentorsAddress, "This is not mentee's mentor");
+        require(mentors[mentorsAddress].OpenSlotsForMentees.length > 0, "No mentees to remove");
 
-    // this function should be done in the SubscriptionManager contract. Because it will be a part of creating mentorship func which is needed right before mentee buys subscription plan
-    // function setMentorAddress(address mentorAddress) public {
-    //     require(mentees[msg.sender].hasMentor == false, "Mentee already has a mentor");
-    //     mentees[msg.sender].mentorsAddress = mentorAddress;
-    //     mentees[msg.sender].hasMentor = true;
-    // }
+        // Set mentee's struct value 'hasMentor' to true
+        mentees[menteesAddress].hasMentor = false;
+        mentees[menteesAddress].mentorsAddress = address(0);
+
+        // remove mentee for montor's mentee list!!!
+        uint256 length = mentors[mentorsAddress].OpenSlotsForMentees.length;
+
+        // Find the index of the mentee to remove
+        uint256 indexToRemove = 0;
+        for (uint256 i = 0; i < length; i++) {
+            if (mentors[mentorsAddress].OpenSlotsForMentees[i] == menteeAddress) {
+                indexToRemove = i;
+                break;
+            }
+        }
+
+        // If found, replace with the last element and pop
+        if (indexToRemove < length) {
+            mentors[mentorsAddress].OpenSlotsForMentees[indexToRemove] = mentors[mentorsAddress].OpenSlotsForMentees[length - 1];
+            mentors[mentorsAddress].OpenSlotsForMentees.pop();
+        }
+
+        cancel(planId);
+    }
 }

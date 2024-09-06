@@ -38,22 +38,10 @@ contract MenteeAcc {
 
     ////////////////////////////
     ///// GETTER FUNCTIONS /////
-    //////////////////////////// 
+    ////////////////////////////
 
     function getMentorsAddress(address menteesAddress) public view returns (address) {
         require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
         return mentees[menteesAddress].mentorsAddress;
     }
-
-    // this function should be done in the SubscriptionManager contract. Because it will be a part of creating mentorship func which is needed right before mentee buys subscription plan
-    // function setMentorAddress(address mentorAddress) public {
-    //     require(mentees[msg.sender].hasMentor == false, "Mentee already has a mentor");
-    //     mentees[msg.sender].mentorsAddress = mentorAddress;
-    //     mentees[msg.sender].hasMentor = true;
-    // }
-
-    // mentee’s wallet/account;
-    // function fundMenteesWallet() {
-    //     // funds mentee’s wallet/account();
-    // }
 }
