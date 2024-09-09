@@ -53,12 +53,6 @@ contract MentorAcc {
     ///// GETTER FUNCTIONS ///
     //////////////////////////
 
-    // might not be needed // might remove
-    function getMentorsAddressForSharedPayment(address mentorsAddress) internal view returns (address) {
-        //gets mentor's address to transfers money from the purchase of a subscription by a mentee to the mentor. // or at least thier cut of the money.
-        return mentors[mentorsAddress].mentorsAddress;
-    }
-
     function getMenteeCount(address mentorsAddress) internal view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
     }
