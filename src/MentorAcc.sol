@@ -12,15 +12,15 @@ contract MentorAcc {
         address[] OpenSlotsForMentees; // each mentor is limited to max 10 mentees.
     }
 
-    mapping(address => Mentor) public mentors;
-    uint256 public constant MAX_MENTEES_PER_MENTOR = 10;
+    mapping(address => Mentor) internal mentors;
+    uint256 internal constant MAX_MENTEES_PER_MENTOR = 10;
 
     function createMentorAccount(
         string memory name,
         string memory expertise,
         uint256 yearsOfExperience,
         string memory bioMessage
-    ) public {
+    ) internal {
         // creates mentor account suing struct and updating mapping;
         require(msg.sender != address(0), "address cannot be null");
         require(mentors[msg.sender].isMentor == false, "this address has already been used to create Mentor account");
@@ -41,7 +41,7 @@ contract MentorAcc {
         _;
     }
 
-    function confirmMentee(address menteesAddress) public onlyMentor {
+    function confirmMentee(address menteesAddress) internal onlyMentor {
         // mentor will pass in mentee’s address to be confirmed.
         require(msg.sender == mentors[msg.sender].mentorsAddress, "Caller must be mentor");
         require(mentors[msg.sender].OpenSlotsForMentees.length < MAX_MENTEES_PER_MENTOR, "No slots available");
@@ -49,23 +49,21 @@ contract MentorAcc {
         mentors[msg.sender].OpenSlotsForMentees.push(menteesAddress);
     }
 
-    // Function RemoveMentee onlyMentor // <-- still add.
-
     //////////////////////////
     ///// GETTER FUNCTIONS ///
     //////////////////////////
 
-    // might not be needed
-    function getMentorsAddressForSharedPayment(address mentorsAddress) public view returns (address) {
+    // might not be needed // might remove
+    function getMentorsAddressForSharedPayment(address mentorsAddress) internal view returns (address) {
         //gets mentor's address to transfers money from the purchase of a subscription by a mentee to the mentor. // or at least thier cut of the money.
         return mentors[mentorsAddress].mentorsAddress;
     }
 
-    function getMenteeCount(address mentorsAddress) public view returns (uint256) {
+    function getMenteeCount(address mentorsAddress) internal view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
     }
 
-    function getOpenSlotsForMenteesArray(address mentorsAddress) public view returns (address[] memory) {
+    function getOpenSlotsForMenteesArray(address mentorsAddress) internal view returns (address[] memory) {
         return mentors[mentorsAddress].OpenSlotsForMentees;
     }
 

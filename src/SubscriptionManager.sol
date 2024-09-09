@@ -5,9 +5,9 @@ import {MentorAcc} from "./MentorAcc.sol";
 import {MenteeAcc} from "./MenteeAcc.sol";
 import {SubscriptionPlans} from "./SubscriptionPlans.sol";
 
-contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
+contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
     // helper function
-    function checkAddressInArray(address[] memory array, address targetAddress) public pure returns (bool) {
+    function checkAddressInArray(address[] memory array, address targetAddress) private pure returns (bool) {
         for (uint256 i = 0; i < array.length; i++) {
             if (array[i] == targetAddress) {
                 return true;
@@ -17,12 +17,20 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
     }
 
     // helper function
-    function callCheckAddressInArray(address mentorsAddress, address menteesAddress) public view returns (bool) {
+    function callCheckAddressInArray(address mentorsAddress, address menteesAddress) private view returns (bool) {
         return checkAddressInArray(getOpenSlotsForMenteesArray(mentorsAddress), menteesAddress);
     }
 
     modifier onlyMentee() {
         require(msg.sender == mentees[msg.sender].menteesAddress, "Caller must be a mentee");
+        _;
+    }
+
+    modifier onlyMentorOrMentee() {
+        require(
+            msg.sender == mentees[msg.sender].menteesAddress || msg.sender == mentors[msg.sender].mentorsAddress,
+            "Caller must be a mentor or mentee"
+        );
         _;
     }
 
@@ -46,12 +54,14 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
     }
 
     // mentee buys specific plan
-    function menteeBuysSubscription(uint256 planId) internal onlyMentee {
+    function menteeBuysSubscription(uint256 planId) public payable onlyMentee {
+        require(msg.value > 0, "Payment required");
         subscribe(planId);
     }
 
     function cancelSubscriptionAndEndMentorship(uint256 planId, address menteesAddress, address mentorsAddress)
         internal
+        onlyMentorOrMentee
     {
         require(mentees[menteesAddress].hasMentor == true, "Menotrship already doesn't exist");
         require(callCheckAddressInArray(mentorsAddress, menteesAddress), "This is already not mentee's mentor");
@@ -68,7 +78,7 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
         // Find the index of the mentee to remove
         uint256 indexToRemove = 0;
         for (uint256 i = 0; i < length; i++) {
-            if (mentors[mentorsAddress].OpenSlotsForMentees[i] == menteeAddress) {
+            if (mentors[mentorsAddress].OpenSlotsForMentees[i] == menteesAddress) {
                 indexToRemove = i;
                 break;
             }
@@ -76,7 +86,8 @@ contract SubscriptionManager is MentorAcc, MenteeAcc, SubscriptionPlans {
 
         // If found, replace with the last element and pop
         if (indexToRemove < length) {
-            mentors[mentorsAddress].OpenSlotsForMentees[indexToRemove] = mentors[mentorsAddress].OpenSlotsForMentees[length - 1];
+            mentors[mentorsAddress].OpenSlotsForMentees[indexToRemove] =
+                mentors[mentorsAddress].OpenSlotsForMentees[length - 1];
             mentors[mentorsAddress].OpenSlotsForMentees.pop();
         }
 

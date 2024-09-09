@@ -14,14 +14,14 @@ contract MenteeAcc {
         bool menteeHasPlan;
     }
 
-    mapping(address => Mentee) public mentees;
+    mapping(address => Mentee) internal mentees;
 
     function createMenteeAccount(
         string memory name,
         string memory expertise,
         uint256 yearsOfExperience,
         string memory bioMessage
-    ) public {
+    ) internal {
         //creates mentee account suing struct and updating mapping;
         mentees[msg.sender] = Mentee({
             isMentee: true,
@@ -40,7 +40,7 @@ contract MenteeAcc {
     ///// GETTER FUNCTIONS /////
     ////////////////////////////
 
-    function getMentorsAddress(address menteesAddress) public view returns (address) {
+    function getMentorsAddress(address menteesAddress) internal view returns (address) {
         require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
         return mentees[menteesAddress].mentorsAddress;
     }
