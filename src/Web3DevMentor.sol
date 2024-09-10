@@ -8,26 +8,29 @@ import {SubscriptionManager} from "./SubscriptionManager.sol";
 contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
     uint256 public constant MAX_PLANS = 3;
 
+    event mentorAccountCreated(address mentorsAddress);
+    event menteeAccountCreated(address menteesAddress);
+    event menteeConfirmed(address menteesAddress);
+
     constructor() Ownable(msg.sender) {}
 
     // do the following later.
-    // 6. add events where needed
     // 9. figure out real plans.
-    // 10. Payment Logic!!!;buy the subscription, and split money. call the payMentor() function;
 
     // creates  subscript plans code // onlyOwner()
     function createSubPlan(address token, uint256 amount, uint256 frequency) public onlyOwner {
-        require(nextPlanId < MAX_PLANS, "Max number of plans reached");
-        for (uint256 i = 0; i < 3; i++) {
-            uint256 planId = nextPlanId;
             createPlan(token, amount, frequency);
-            subscribe(planId);
-        }
+    }
+
+    function deleteSubPlan(uint256 planId) internal onlyOwner {
+        // unlikly to use this.
+        // will send out a notification on frontend for users in advance.
+        deletePlan(planId);
     }
 
     // //calls the menteeBuysSubscription(uint256 amount) & createMentorship(“mentor’s address)  functions
     function buySubscriptionAndCreateMentorship(address menteesAddress, address mentorsAddress, uint256 planId)
-    public
+        public
         payable
         onlyMentee
     {
@@ -50,7 +53,7 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
     }
 
     function callCancelSubscriptionAndEndMentorship(uint256 planId, address menteesAddress, address mentorsAddress)
-    public
+        public
         onlyMentorOrMentee
     {
         cancelSubscriptionAndEndMentorship(planId, menteesAddress, mentorsAddress);
@@ -65,6 +68,7 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         string memory bioMessage
     ) public {
         createMentorAccount(name, expertise, yearsOfExperience, bioMessage);
+        emit mentorAccountCreated(msg.sender);
     }
 
     function signUpAsMentee(
@@ -74,10 +78,12 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         string memory bioMessage
     ) public {
         createMenteeAccount(name, expertise, yearsOfExperience, bioMessage);
+        emit menteeAccountCreated(msg.sender);
     }
 
     function callconfirmMentee(address menteesAddress) public onlyMentor {
         confirmMentee(menteesAddress);
+        emit menteeConfirmed(menteesAddress);
     }
 
     function transferOwnership(address newOwner) public override onlyOwner {

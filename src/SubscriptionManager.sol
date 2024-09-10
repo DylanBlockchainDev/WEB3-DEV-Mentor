@@ -6,6 +6,9 @@ import {MenteeAcc} from "./MenteeAcc.sol";
 import {SubscriptionPlans} from "./SubscriptionPlans.sol";
 
 contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
+    event MentorshipCreated(address menteesAddress, address mentorsAddress);
+    event SubscriptionCancelledAndEndedMentorship(uint256 planId, address menteesAddress, address mentorsAddress);
+
     // helper function
     function checkAddressInArray(address[] memory array, address targetAddress) private pure returns (bool) {
         for (uint256 i = 0; i < array.length; i++) {
@@ -50,13 +53,15 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         // Update mentee's mentorsAddress to the mentor's address passed in
         mentees[menteesAddress].mentorsAddress = mentorsAddress;
 
+        emit MentorshipCreated(menteesAddress, mentorsAddress);
+
         return true; // mentorship exists.
     }
 
     // mentee buys specific plan
     function menteeBuysSubscription(uint256 planId) public payable onlyMentee {
-        require(msg.value > 0, "Payment required");
-        subscribe(planId);
+        address mentorsAddress = mentees[msg.sender].mentorsAddress;
+        subscribe(planId, mentorsAddress);
     }
 
     function cancelSubscriptionAndEndMentorship(uint256 planId, address menteesAddress, address mentorsAddress)
@@ -92,5 +97,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         }
 
         cancel(planId);
+
+        emit SubscriptionCancelledAndEndedMentorship(planId, menteesAddress, mentorsAddress);
     }
 }
