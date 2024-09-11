@@ -6,8 +6,6 @@ import {ReentrancyGuard} from "../lib/openzeppelin-contracts/contracts/utils/Ree
 import {SubscriptionManager} from "./SubscriptionManager.sol";
 
 contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
-    uint256 public constant MAX_PLANS = 3;
-
     event mentorAccountCreated(address mentorsAddress);
     event menteeAccountCreated(address menteesAddress);
     event menteeConfirmed(address menteesAddress);
