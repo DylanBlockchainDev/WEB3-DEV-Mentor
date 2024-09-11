@@ -77,6 +77,7 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
     }
 
     function callconfirmMentee(address menteesAddress) public onlyMentor {
+        require(mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
         confirmMentee(menteesAddress);
         emit menteeConfirmed(menteesAddress);
     }
