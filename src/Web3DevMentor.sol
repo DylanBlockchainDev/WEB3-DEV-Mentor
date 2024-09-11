@@ -23,7 +23,7 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         deletePlan(planId);
     }
 
-    // //calls the menteeBuysSubscription(uint256 amount) & createMentorship(“mentor’s address)  functions
+    //calls the menteeBuysSubscription(uint256 amount) & createMentorship(“mentor’s address)  functions
     function buySubscriptionAndCreateMentorship(address menteesAddress, address mentorsAddress, uint256 planId)
         public
         payable
