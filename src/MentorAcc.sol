@@ -49,10 +49,6 @@ contract MentorAcc {
         mentors[msg.sender].OpenSlotsForMentees.push(menteesAddress);
     }
 
-    //////////////////////////
-    ///// GETTER FUNCTIONS ///
-    //////////////////////////
-
     function getMenteeCount(address mentorsAddress) internal view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
     }

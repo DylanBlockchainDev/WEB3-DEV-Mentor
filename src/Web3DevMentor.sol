@@ -14,9 +14,6 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
 
     constructor() Ownable(msg.sender) {}
 
-    // do the following later.
-    // 9. figure out real plans.
-
     // creates  subscript plans code // onlyOwner()
     function createSubPlan(address token, uint256 amount, uint256 frequency) public onlyOwner {
             createPlan(token, amount, frequency);

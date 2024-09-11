@@ -4,9 +4,6 @@ pragma solidity 0.8.20;
 import {IERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract SubscriptionPlans {
-    // TODO 
-    // 2. update functions in other contracts that call this one.
-
     uint256 public nextPlanId;
 
     struct Plan {

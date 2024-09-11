@@ -36,10 +36,6 @@ contract MenteeAcc {
         });
     }
 
-    ////////////////////////////
-    ///// GETTER FUNCTIONS /////
-    ////////////////////////////
-
     function getMentorsAddress(address menteesAddress) internal view returns (address) {
         require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
         return mentees[menteesAddress].mentorsAddress;
