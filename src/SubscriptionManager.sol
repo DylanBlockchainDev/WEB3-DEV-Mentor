@@ -9,19 +9,14 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
     event MentorshipCreated(address menteesAddress, address mentorsAddress);
     event SubscriptionCancelledAndEndedMentorship(uint256 planId, address menteesAddress, address mentorsAddress);
 
-    // helper function
-    function checkAddressInArray(address[] memory array, address targetAddress) private pure returns (bool) {
-        for (uint256 i = 0; i < array.length; i++) {
-            if (array[i] == targetAddress) {
+    function checkAddressInArray(address mentorsAddress, address targetAddress) private view returns (bool) {
+        address[] memory OpenSlotsForMentees = getOpenSlotsForMenteesArray(mentorsAddress);
+        for (uint256 i = 0; i < OpenSlotsForMentees.length; i++) {
+            if (OpenSlotsForMentees[i] == targetAddress) {
                 return true;
             }
         }
         return false;
-    }
-
-    // helper function
-    function callCheckAddressInArray(address mentorsAddress, address menteesAddress) private view returns (bool) {
-        return checkAddressInArray(getOpenSlotsForMenteesArray(mentorsAddress), menteesAddress);
     }
 
     modifier onlyMentee() {
@@ -43,9 +38,9 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         onlyMentee
         returns (bool /*bool(there is a mentorship)*/ )
     {
-        require(mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
+        require(!mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
         require(mentors[msg.sender].OpenSlotsForMentees.length < MAX_MENTEES_PER_MENTOR, "No slots available");
-        require(callCheckAddressInArray(mentorsAddress, menteesAddress), "Mentee's address has not been confirmed");
+        require(checkAddressInArray(mentorsAddress, menteesAddress), "Mentee's address has not been confirmed");
 
         // Set mentee's struct value 'hasMentor' to true
         mentees[menteesAddress].hasMentor = true;
@@ -69,7 +64,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         onlyMentorOrMentee
     {
         require(mentees[menteesAddress].hasMentor == true, "Menotrship already doesn't exist");
-        require(callCheckAddressInArray(mentorsAddress, menteesAddress), "This is already not mentee's mentor");
+        require(checkAddressInArray(mentorsAddress, menteesAddress), "This is already not mentee's mentor");
         require(mentees[menteesAddress].mentorsAddress == mentorsAddress, "This is not mentee's mentor");
         require(mentors[mentorsAddress].OpenSlotsForMentees.length > 0, "No mentees to remove");
 
