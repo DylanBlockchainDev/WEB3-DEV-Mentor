@@ -1,6 +1,4 @@
 possible improvements:
-1.Consider adding a function to update mentor's and metee's information in the MentorAcc/MenteeAcc contracts.
-2.Implement a function to get the top-performing mentors based on their mentees' progress in Web3DevMentor.sol, and the mentees rate thier mentors.
 
 GETTER FUNCTIONS
 3.Implement a function to get a mentee's profile in Web3DevMentor.sol.
