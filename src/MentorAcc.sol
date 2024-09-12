@@ -49,6 +49,23 @@ contract MentorAcc {
         mentors[msg.sender].OpenSlotsForMentees.push(menteesAddress);
     }
 
+    function updateMentorInfo(
+        string memory newName,
+        string memory newExpertise,
+        uint256 newYearsOfExperience,
+        string memory newBioMessage
+    ) internal onlyMentor{
+        mentors[msg.sender] = Mentor({
+            isMentor: true,
+            mentorsAddress: msg.sender,
+            name: newName,
+            expertise: newExpertise,
+            yearsOfExperience: newYearsOfExperience,
+            bioMessage: newBioMessage,
+            OpenSlotsForMentees: mentors[msg.sender].OpenSlotsForMentees
+        });
+    }
+
     function getMenteeCount(address mentorsAddress) internal view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
     }

@@ -43,10 +43,10 @@ contract SubscriptionPlans {
         Plan memory plan = plans[planId];
         require(plan.merchant == msg.sender, "Caller is not the merchant");
         require(planId < nextPlanId, "Plan does not exist");
-        
+
         delete plans[planId];
         nextPlanId--;
-        
+
         emit PlanDeleted(msg.sender, planId, block.timestamp);
     }
 
@@ -54,7 +54,7 @@ contract SubscriptionPlans {
         IERC20 token = IERC20(plans[planId].token);
         Plan storage plan = plans[planId];
         require(plan.merchant != address(0), "this plan does not exist");
-        require(plan.token != address(0), 'Invalid token address');
+        require(plan.token != address(0), "Invalid token address");
 
         bool success1 = token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
         bool success2 = token.transferFrom(msg.sender, mentor, plan.amount * 80 / 100); // Menotr receives 80%
@@ -66,7 +66,8 @@ contract SubscriptionPlans {
 
         emit PaymentSent(msg.sender, mentor, plan.merchant, plan.amount, planId, block.timestamp);
 
-        subscriptions[msg.sender][planId] = Subscription(msg.sender, mentor, block.timestamp, block.timestamp + plan.frequency);
+        subscriptions[msg.sender][planId] =
+            Subscription(msg.sender, mentor, block.timestamp, block.timestamp + plan.frequency);
         emit SubscriptionCreated(msg.sender, mentor, planId, block.timestamp);
     }
 

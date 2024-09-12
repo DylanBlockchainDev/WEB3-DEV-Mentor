@@ -36,6 +36,32 @@ contract MenteeAcc {
         });
     }
 
+    modifier onlyMentee() {
+        require(msg.sender == mentees[msg.sender].menteesAddress, "Caller must be mentee");
+        _;
+    }
+
+    function updateMenteeInfo(
+        string memory newName,
+        string memory newExpertise,
+        uint256 newYearsOfExperience,
+        string memory newBioMessage
+    ) internal onlyMentee {
+        require(!mentees[msg.sender].hasMentor, "Mentee does not have mentor yet");
+
+        mentees[msg.sender] = Mentee({
+            isMentee: true,
+            menteesAddress: msg.sender,
+            name: newName,
+            expertise: newExpertise,
+            yearsOfExperience: newYearsOfExperience,
+            bioMessage: newBioMessage,
+            hasMentor: mentees[msg.sender].hasMentor,
+            mentorsAddress: mentees[msg.sender].mentorsAddress,
+            menteeHasPlan: mentees[msg.sender].menteeHasPlan
+        });
+    }
+
     function getMentorsAddress(address menteesAddress) internal view returns (address) {
         require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
         return mentees[menteesAddress].mentorsAddress;
