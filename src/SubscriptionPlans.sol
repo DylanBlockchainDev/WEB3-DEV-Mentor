@@ -56,21 +56,15 @@ contract SubscriptionPlans {
         require(plan.merchant != address(0), "this plan does not exist");
         require(plan.token != address(0), 'Invalid token address');
 
-        token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
-        token.transferFrom(msg.sender, mentor, plan.amount * 80 / 100); // Menotr receives 80%
+        bool success1 = token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
+        bool success2 = token.transferFrom(msg.sender, mentor, plan.amount * 80 / 100); // Menotr receives 80%
+
+        if (!success1 || !success2) {
+            // Revert if either transfer fails
+            revert("Transfer failed");
+        }
 
         emit PaymentSent(msg.sender, mentor, plan.merchant, plan.amount, planId, block.timestamp);
-
-        // WILL POSSIBLY IMPELEMENT THIS LOGIC INSTEAD
-        // uint256 amount = plan.amount;
-        // try token.transferFrom(msg.sender, plan.merchant, amount * 20 / 100) {
-        //     token.transferFrom(msg.sender, mentor, amount * 80 / 100);
-        // } catch {
-        //     // If either transfer fails, revert and refund any previously transferred amounts
-        //     token.transferFrom(plan.merchant, msg.sender, amount * 20 / 100);
-        //     token.transferFrom(mentor, msg.sender, amount * 80 / 100);
-        //     revert("Transfer failed");
-        // }
 
         subscriptions[msg.sender][planId] = Subscription(msg.sender, mentor, block.timestamp, block.timestamp + plan.frequency);
         emit SubscriptionCreated(msg.sender, mentor, planId, block.timestamp);

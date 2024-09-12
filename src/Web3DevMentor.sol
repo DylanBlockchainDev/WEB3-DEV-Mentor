@@ -32,15 +32,6 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         bool mentorshipCreated = createMentorship(menteesAddress, mentorsAddress);
         require(mentorshipCreated, "Failed to create mentorship");
         menteeBuysSubscription(planId);
-
-        // try this() { // CONSIDER refund mechanism!!!!!
-        //     menteeBuysSubscription{value: msg.value}(planId);
-        // } catch (bytes memory reason) {
-        //     // Refund the payment if subscription creation fails
-        //     (bool success, ) = msg.sender.call{value: msg.value}("");
-        //     require(success, "Refund failed");
-        //     revert("Subscription creation failed");
-        // }
     }
 
     function callPay(address subscriber, uint256 planId) public payable {
