@@ -84,8 +84,13 @@ contract SubscriptionPlans {
         require(subscription.subscriber != address(0), "this subscription does not exist");
         require(block.timestamp > subscription.nextPayment, "not due yet");
 
-        token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
-        token.transferFrom(msg.sender, subscription.mentor, plan.amount * 80 / 100); // Mentor receives 80%
+        bool success1 = token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
+        bool success2 = token.transferFrom(msg.sender, subscription.mentor, plan.amount * 80 / 100); // Mentor receives 80%
+
+        if (!success1 || !success2) {
+            // Revert if either transfer fails
+            revert("Transfer failed");
+        }
 
         emit PaymentSent(subscriber, subscription.mentor, plan.merchant, plan.amount, planId, block.timestamp);
         subscription.nextPayment = subscription.nextPayment + plan.frequency;
