@@ -76,4 +76,50 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
     function transferOwnership(address newOwner) public override onlyOwner {
         _transferOwnership(newOwner);
     }
+
+    function getMenteeProfile(address menteesAddress) public view returns (
+        bool isMentee,
+        address menteesAddress_,
+        string memory name,
+        string memory expertise,
+        uint256 yearsOfExperience,
+        string memory bioMessage,
+        bool hasMentor,
+        address mentorsAddress,
+        bool menteeHasPlan
+    ) {
+        Mentee storage mentee = mentees[menteesAddress];
+        return (
+            mentee.isMentee,
+            mentee.menteesAddress,
+            mentee.name,
+            mentee.expertise,
+            mentee.yearsOfExperience,
+            mentee.bioMessage,
+            mentee.hasMentor,
+            mentee.mentorsAddress,
+            mentee.menteeHasPlan
+        );
+    }
+
+    function getMentorProfile(address mentorsAddress) public view returns (
+        bool isMentor,
+        address mentorsAddress_,
+        string memory name,
+        string memory expertise,
+        uint256 yearsOfExperience,
+        string memory bioMessage,
+        address[] memory openSlotsForMentees
+    ) {
+        Mentor storage mentor = mentors[mentorsAddress];
+        return (
+            mentor.isMentor,
+            mentor.mentorsAddress,
+            mentor.name,
+            mentor.expertise,
+            mentor.yearsOfExperience,
+            mentor.bioMessage,
+            mentor.OpenSlotsForMentees
+        );
+    }
 }
