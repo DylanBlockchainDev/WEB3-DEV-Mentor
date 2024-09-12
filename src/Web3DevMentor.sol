@@ -17,7 +17,7 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         createPlan(token, amount, frequency);
     }
 
-    function deleteSubPlan(uint256 planId) internal onlyOwner {
+    function deleteSubPlan(uint256 planId) public onlyOwner {
         // unlikly to use this.
         // will send out a notification on frontend for users in advance.
         deletePlan(planId);
