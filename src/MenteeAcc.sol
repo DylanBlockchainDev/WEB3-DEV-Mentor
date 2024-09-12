@@ -15,6 +15,7 @@ contract MenteeAcc {
     }
 
     mapping(address => Mentee) internal mentees;
+    uint256 public totalMentees;
 
     function createMenteeAccount(
         string memory name,
@@ -34,6 +35,8 @@ contract MenteeAcc {
             mentorsAddress: address(0), //zero address initialized
             menteeHasPlan: false
         });
+
+        totalMentees++;
     }
 
     modifier onlyMentee() {

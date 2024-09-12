@@ -127,4 +127,12 @@ contract Web3DevMentor is SubscriptionManager, Ownable, ReentrancyGuard {
         Mentor storage mentor = mentors[mentorsAddress];
         return mentor.OpenSlotsForMentees.length;
     }
+
+    function getTotalMentors() public view returns (uint256) {
+        return totalMentors; 
+    }
+
+    function getTotalMentees() public view returns (uint256) {
+        return totalMentees;
+    }
 }

@@ -14,6 +14,7 @@ contract MentorAcc {
 
     mapping(address => Mentor) internal mentors;
     uint256 internal constant MAX_MENTEES_PER_MENTOR = 10;
+    uint256 public totalMentors;
 
     function createMentorAccount(
         string memory name,
@@ -34,6 +35,8 @@ contract MentorAcc {
             bioMessage: bioMessage,
             OpenSlotsForMentees: new address[](MAX_MENTEES_PER_MENTOR)
         });
+
+        totalMentors++;
     }
 
     modifier onlyMentor() {
