@@ -19,10 +19,10 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         return false;
     }
 
-    modifier onlyMentee() {
-        require(msg.sender == mentees[msg.sender].menteesAddress, "Caller must be a mentee");
-        _;
-    }
+    // modifier onlyMentee() {
+    //     require(msg.sender == mentees[msg.sender].menteesAddress, "Caller must be a mentee");
+    //     _;
+    // }
 
     modifier onlyMentorOrMentee() {
         require(
