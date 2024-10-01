@@ -69,11 +69,11 @@ contract MentorAcc {
         });
     }
 
-    function getMenteeCount(address mentorsAddress) internal view returns (uint256) {
+    function getMenteeCountOfMentor(address mentorsAddress) internal view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
     }
 
-    function getOpenSlotsForMenteesArray(address mentorsAddress) internal view returns (address[] memory) {
+    function getOpenSlotsForMenteesArray(address mentorsAddress) public view returns (address[] memory) {
         return mentors[mentorsAddress].OpenSlotsForMentees;
     }
 
