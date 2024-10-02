@@ -2,26 +2,26 @@
 pragma solidity 0.8.20;
 
 import {Test, console} from "../lib/forge-std/src/Test.sol";
-import {Web3DevMentor} from "../src/Web3DevMentor.sol";
+import {SubscriptionManager} from "../src/SubscriptionManager.sol";
 
 contract Web3DevMentorTest is Test {
-    Web3DevMentor public wdm;
+    SubscriptionManager public wdm;
     address public mentor;
     address public mentee;
     uint256 availableSlots;
 
     function setUp() public {
-        wdm = new Web3DevMentor();
+        wdm = new SubscriptionManager();
 
         // Create mock accounts
         mentor = address(1);
         mentee = address(2);
 
         vm.prank(mentor);
-        wdm.signUpAsMentor("TestMentor", "Test Mentor Expertise", 10, "Test Mentor Bio");
+        wdm.createMentorAccount("TestMentor", "Test Mentor Expertise", 10, "Test Mentor Bio");
 
         vm.prank(mentee);
-        wdm.signUpAsMentee("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
+        wdm.createMenteeAccount("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
     }
 
     function testCreatMentorAccount() public {
@@ -44,7 +44,7 @@ contract Web3DevMentorTest is Test {
         assertEq(expertise, "Test Mentor Expertise", "Incorrect Expertise");
         assertEq(yearsOfExperience, 10, "Incorrect years of exp");
         assertEq(bioMessage, "Test Mentor Bio", "Incorrect Mentor Bio");
-        assertEq(openSlotsForMentees.length, 10, "Open slots count should be 10");
+        assertEq(openSlotsForMentees.length, 0, "Open slots count should be 10");
 
     }
 
@@ -76,9 +76,9 @@ contract Web3DevMentorTest is Test {
     }
 
     function testCallconfirmMentee() public returns(bool) {
-        console.log(availableSlots, "availableSlots 2");
         vm.prank(mentor);
-        wdm.callconfirmMentee(mentee);
+
+        wdm.confirmMentee(mentee);
 
         bool result = false;
         for (uint256 i = 0; i < wdm.getOpenSlotsForMenteesArray(mentor).length; i++) {

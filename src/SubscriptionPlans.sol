@@ -29,7 +29,7 @@ contract SubscriptionPlans {
     event SubscriptionCancelled(address subscriber, uint256 planId, uint256 date);
     event PaymentSent(address from, address to, address to2, uint256 amount, uint256 planId, uint256 date);
 
-    function createPlan(address token, uint256 amount, uint256 frequency) internal {
+    function createPlan(address token, uint256 amount, uint256 frequency) external {
         require(token != address(0), "address cannot be null address");
         require(amount > 0, "amount needs to be > 0");
         require(frequency > 0, "frequency needs to be > 0");
@@ -39,7 +39,7 @@ contract SubscriptionPlans {
         emit PlanCreated(msg.sender);
     }
 
-    function deletePlan(uint256 planId) internal {
+    function deletePlan(uint256 planId) external {
         Plan memory plan = plans[planId];
         require(plan.merchant == msg.sender, "Caller is not the merchant");
         require(planId < nextPlanId, "Plan does not exist");
@@ -78,7 +78,7 @@ contract SubscriptionPlans {
         emit SubscriptionCancelled(msg.sender, planId, block.timestamp);
     }
 
-    function pay(address subscriber, uint256 planId) internal {
+    function pay(address subscriber, uint256 planId) external {
         Subscription storage subscription = subscriptions[subscriber][planId];
         Plan storage plan = plans[planId];
         IERC20 token = IERC20(plan.token);

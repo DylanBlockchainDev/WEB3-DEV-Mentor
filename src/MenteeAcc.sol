@@ -22,7 +22,7 @@ contract MenteeAcc {
         string memory expertise,
         uint256 yearsOfExperience,
         string memory bioMessage
-    ) internal {
+    ) external {
         //creates mentee account suing struct and updating mapping;
         mentees[msg.sender] = Mentee({
             isMentee: true,
@@ -49,7 +49,7 @@ contract MenteeAcc {
         string memory newExpertise,
         uint256 newYearsOfExperience,
         string memory newBioMessage
-    ) internal onlyMentee {
+    ) external onlyMentee {
         // might remove, should have to have a mentor in order to update info.
         // require(!mentees[msg.sender].hasMentor, "Mentee does not have mentor yet");
 
@@ -66,7 +66,7 @@ contract MenteeAcc {
         });
     }
 
-    function getMentorsAddress(address menteesAddress) internal view returns (address) {
+    function getMentorsAddress(address menteesAddress) external view returns (address) {
         require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
         return mentees[menteesAddress].mentorsAddress;
     }
