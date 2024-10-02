@@ -20,20 +20,6 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable
         _transferOwnership(newOwner);
     }
 
-    // function createSubPlan(address token, uint256 amount, uint256 frequency) public onlyOwner {
-    //     createPlan(token, amount, frequency);
-    // }
-
-    // function deleteSubPlan(uint256 planId) public onlyOwner {
-    //     // unlikly to use this.
-    //     // will send out a notification on frontend for users in advance.
-    //     deletePlan(planId);
-    // }
-
-    // function callPay(address subscriber, uint256 planId) public payable {
-    //     pay(subscriber, planId);
-    // }
-
     function checkAddressInArray(address mentorsAddress, address targetAddress) private view returns (bool) {
         address[] memory OpenSlotsForMentees = getOpenSlotsForMenteesArray(mentorsAddress);
         for (uint256 i = 0; i < OpenSlotsForMentees.length; i++) {
@@ -67,12 +53,6 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable
 
         return true; // mentorship exists.
     }
-
-    // mentee buys specific plan
-    // function menteeBuysSubscription(uint256 planId) public payable onlyMentee {
-    //     address mentorsAddress = mentees[msg.sender].mentorsAddress;
-    //     subscribe(planId, mentorsAddress);
-    // }
 
     function buySubscriptionAndCreateMentorship(address menteesAddress, address mentorsAddress, uint256 planId)
         public
