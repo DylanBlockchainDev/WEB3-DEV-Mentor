@@ -54,7 +54,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable
         return true; // mentorship exists.
     }
 
-    function buySubscriptionAndCreateMentorship(address menteesAddress, address mentorsAddress, uint256 planId)
+    function CreateMentorshipAndBuySubscription(address menteesAddress, address mentorsAddress, uint256 planId)
         public
         payable
         onlyMentee
