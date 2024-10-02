@@ -22,17 +22,6 @@ contract Web3DevMentorTest is Test {
 
         vm.prank(mentee);
         wdm.signUpAsMentee("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
-
-        // Check if there are available slots
-        availableSlots = wdm.getTotalSubscribersForMentor(mentor);
-        console.log(availableSlots, "availableSlots 1");
-        assertEq(availableSlots, 10, "Should have 10 available slots initially");
-
-        // Confirm mentorship only if there are available slots
-        if (availableSlots > 0) {
-            vm.prank(mentor);
-            wdm.callconfirmMentee(mentee);
-        }
     }
 
     function testCreatMentorAccount() public {

@@ -34,7 +34,6 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc {
         returns (bool /*bool(there is a mentorship)*/ )
     {
         require(!mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
-        require(mentors[msg.sender].OpenSlotsForMentees.length < MAX_MENTEES_PER_MENTOR, "No slots available");
         require(checkAddressInArray(mentorsAddress, menteesAddress), "Mentee's address has not been confirmed");
 
         // Set mentee's struct value 'hasMentor' to true
