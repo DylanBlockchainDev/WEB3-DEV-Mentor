@@ -65,9 +65,4 @@ contract MenteeAcc {
             menteeHasPlan: mentees[msg.sender].menteeHasPlan
         });
     }
-
-    function getMentorsAddress(address menteesAddress) external view returns (address) {
-        require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
-        return mentees[menteesAddress].mentorsAddress;
-    }
 }

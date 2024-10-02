@@ -68,7 +68,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable
     }
 
 
-    function cancelSubscriptionAndEndMentorship(uint256 planId, address menteesAddress, address mentorsAddress)
+    function EndMentorshipAndCancelSubscription(uint256 planId, address menteesAddress, address mentorsAddress)
         internal
         onlyMentorOrMentee
     {
@@ -155,6 +155,11 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable
 
     function getMenteeCountOfMentor(address mentorsAddress) external view returns (uint256) {
         return mentors[mentorsAddress].OpenSlotsForMentees.length;
+    }
+
+    function getMentorsAddress(address menteesAddress) external view returns (address) {
+        require(mentees[menteesAddress].hasMentor == true, "Mentee does not have mentor... yet");
+        return mentees[menteesAddress].mentorsAddress;
     }
 
     function getTotalMentors() public view returns (uint256) {

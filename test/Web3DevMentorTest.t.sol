@@ -75,6 +75,56 @@ contract Web3DevMentorTest is Test {
         assertEq(menteeHasPlan, false, "Should be false initially");
     }
 
+    function testUpdateMentorInfo() public {
+        vm.prank(mentor);
+        wdm.updateMentorInfo("2 TestMentor", "2 Test Mentor Expertise", 12, "2 Test Mentor Bio");
+
+        (
+            bool isMentor, 
+            address mentorsAddress_, 
+            string memory name, 
+            string memory expertise, 
+            uint256 yearsOfExperience, 
+            string memory bioMessage, 
+            address[] memory openSlotsForMentees
+        ) = wdm.getMentorProfile(mentor);
+
+        assertEq(isMentor, true, "Is not Mentor: False");
+        assertEq(mentorsAddress_, mentor, "Incorrect mentorsAddress");
+        assertEq(name, "2 TestMentor", "Incorrect name");
+        assertEq(expertise, "2 Test Mentor Expertise", "Incorrect Expertise");
+        assertEq(yearsOfExperience, 12, "Incorrect years of exp");
+        assertEq(bioMessage, "2 Test Mentor Bio", "Incorrect Mentor Bio");
+        assertEq(openSlotsForMentees.length, 0, "Open slots count should be 10");
+    }
+
+    function testUpdateMenteeInfo() public {
+        vm.prank(mentee);
+        wdm.updateMenteeInfo("2 TestMentee", "2 Test Mentee Expertise", 2, "2 Test Mentee Bio");
+
+        (
+            bool isMentee, 
+            address menteesAddress_, 
+            string memory name, 
+            string memory expertise, 
+            uint256 yearsOfExperience, 
+            string memory bioMessage, 
+            bool hasMentor,
+            address mentorsAddress,
+            bool menteeHasPlan
+        ) = wdm.getMenteeProfile(mentee);
+
+        assertEq(isMentee, true, "Is not mentee: false");
+        assertEq(menteesAddress_, mentee, "Incorrect menteesAddress");
+        assertEq(name, "2 TestMentee", "Incorrect name");
+        assertEq(expertise, "2 Test Mentee Expertise", "Incorrect expertise");
+        assertEq(yearsOfExperience, 2, "Incorect years of exp");
+        assertEq(bioMessage, "2 Test Mentee Bio", "Incorrect bio message");
+        assertEq(hasMentor, false, "should be false initally");
+        assertEq(mentorsAddress, address(0), "Should be address(0) initially");
+        assertEq(menteeHasPlan, false, "Should be false initially");
+    }
+
     function testCallconfirmMentee() public returns(bool) {
         vm.prank(mentor);
 
@@ -94,5 +144,6 @@ contract Web3DevMentorTest is Test {
     // testDeleteSubPlan - partial with setUp()
 
     // testCreateMentorshipAndBuySubscription
+    // testEndMentorshipAndCancelSubscription
 
 }
