@@ -2,8 +2,9 @@
 pragma solidity 0.8.20;
 
 import {IERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
-contract SubscriptionPlans {
+contract SubscriptionPlans is Ownable{
     uint256 public nextPlanId;
 
     struct Plan {
@@ -29,7 +30,13 @@ contract SubscriptionPlans {
     event SubscriptionCancelled(address subscriber, uint256 planId, uint256 date);
     event PaymentSent(address from, address to, address to2, uint256 amount, uint256 planId, uint256 date);
 
-    function createPlan(address token, uint256 amount, uint256 frequency) external {
+    constructor() Ownable(msg.sender) {}
+
+    function transferOwnership(address newOwner) public override onlyOwner {
+        _transferOwnership(newOwner);
+    }
+
+    function createPlan(address token, uint256 amount, uint256 frequency) external onlyOwner {
         require(token != address(0), "address cannot be null address");
         require(amount > 0, "amount needs to be > 0");
         require(frequency > 0, "frequency needs to be > 0");
@@ -39,7 +46,7 @@ contract SubscriptionPlans {
         emit PlanCreated(msg.sender);
     }
 
-    function deletePlan(uint256 planId) external {
+    function deletePlan(uint256 planId) external onlyOwner {
         Plan memory plan = plans[planId];
         require(plan.merchant == msg.sender, "Caller is not the merchant");
         require(planId < nextPlanId, "Plan does not exist");

@@ -3,15 +3,23 @@ pragma solidity 0.8.20;
 
 import {Test, console} from "../lib/forge-std/src/Test.sol";
 import {SubscriptionManager} from "../src/SubscriptionManager.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/token/ERC20Mock.sol";
 
 contract Web3DevMentorTest is Test {
     SubscriptionManager public wdm;
     address public mentor;
     address public mentee;
-    uint256 availableSlots;
+    ERC20Mock public weth;
 
     function setUp() public {
         wdm = new SubscriptionManager();
+        weth = new ERC20Mock();
+
+        // Create mock SubPlans
+        // have to create mock token.
+        wdm.createPlan(address(weth), 100, 30 days);
+        wdm.createPlan(address(weth), 600, 180 days);
+        wdm.createPlan(address(weth), 1200, 1 years);
 
         // Create mock accounts
         mentor = address(1);
@@ -140,8 +148,12 @@ contract Web3DevMentorTest is Test {
         return result;
     }
 
-    // testCreatSubPlan - partial with setUp()
-    // testDeleteSubPlan - partial with setUp()
+    // testCreatPlan - partial with setUp()
+    function testCreatPlan() public {
+        // you created mock plans, now test to see if plans were correctly created!!!
+    }
+
+    // testDeletePlan - partial with setUp()
 
     // testCreateMentorshipAndBuySubscription
     // testEndMentorshipAndCancelSubscription

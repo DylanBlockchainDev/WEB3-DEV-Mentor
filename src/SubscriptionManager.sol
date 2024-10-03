@@ -7,18 +7,12 @@ import {SubscriptionPlans} from "./SubscriptionPlans.sol";
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "../lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
-contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Ownable, ReentrancyGuard {
+contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, ReentrancyGuard {
     event MentorshipCreated(address menteesAddress, address mentorsAddress);
     event SubscriptionCancelledAndEndedMentorship(uint256 planId, address menteesAddress, address mentorsAddress);
     event mentorAccountCreated(address mentorsAddress);
     event menteeAccountCreated(address menteesAddress);
     event menteeConfirmed(address menteesAddress);
-
-    constructor() Ownable(msg.sender) {}
-
-    function transferOwnership(address newOwner) public override onlyOwner {
-        _transferOwnership(newOwner);
-    }
 
     function checkAddressInArray(address mentorsAddress, address targetAddress) private view returns (bool) {
         address[] memory OpenSlotsForMentees = getOpenSlotsForMenteesArray(mentorsAddress);
