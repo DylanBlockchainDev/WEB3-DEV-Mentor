@@ -42,23 +42,15 @@ contract Web3DevMentorTest is Test {
         // vm.prank(mentor);
         // subm.signUpAsMentor("TestMentor", "Test Mentor Expertise", 10, "Test Mentor Bio");
 
-        (
-            bool isMentor, 
-            address mentorsAddress_, 
-            string memory name, 
-            string memory expertise, 
-            uint256 yearsOfExperience, 
-            string memory bioMessage, 
-            address[] memory openSlotsForMentees
-        ) = subm.getMentorProfile(mentor);
+        SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
 
-        assertEq(isMentor, true, "Is not Mentor: False");
-        assertEq(mentorsAddress_, mentor, "Incorrect mentorsAddress");
-        assertEq(name, "TestMentor", "Incorrect name");
-        assertEq(expertise, "Test Mentor Expertise", "Incorrect Expertise");
-        assertEq(yearsOfExperience, 10, "Incorrect years of exp");
-        assertEq(bioMessage, "Test Mentor Bio", "Incorrect Mentor Bio");
-        assertEq(openSlotsForMentees.length, 0, "Open slots count is 10, but current length of array is 0");
+        assertEq(mentors.isMentor, true, "Is not Mentor: False");
+        assertEq(mentors.mentorsAddress, mentor, "Incorrect mentorsAddress");
+        assertEq(mentors.name, "TestMentor", "Incorrect name");
+        assertEq(mentors.expertise, "Test Mentor Expertise", "Incorrect Expertise");
+        assertEq(mentors.yearsOfExperience, 10, "Incorrect years of exp");
+        assertEq(mentors.bioMessage, "Test Mentor Bio", "Incorrect Mentor Bio");
+        assertEq(mentors.OpenSlotsForMentees.length, 0, "Open slots count is 10, but current length of array is 0");
 
     }
 
@@ -66,84 +58,63 @@ contract Web3DevMentorTest is Test {
         // vm.prank(mentee);
         // subm.signUpAsMentee("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
 
-        (
-            bool isMentee, 
-            address menteesAddress_, 
-            string memory name, 
-            string memory expertise, 
-            uint256 yearsOfExperience, 
-            string memory bioMessage, 
-            bool hasMentor,
-            address mentorsAddress,
-            bool menteeHasPlan
-        ) = subm.getMenteeProfile(mentee);
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
 
-        assertEq(isMentee, true, "Is not mentee: false");
-        assertEq(menteesAddress_, mentee, "Incorrect menteesAddress");
-        assertEq(name, "TestMentee", "Incorrect name");
-        assertEq(expertise, "Test Mentee Expertise", "Incorrect expertise");
-        assertEq(yearsOfExperience, 0, "Incorect years of exp");
-        assertEq(bioMessage, "Test Mentee Bio", "Incorrect bio message");
-        assertEq(hasMentor, false, "should be false initally");
-        assertEq(mentorsAddress, address(0), "Should be address(0) initially");
-        assertEq(menteeHasPlan, false, "Should be false initially");
+
+        assertEq(mentees.isMentee, true, "Is not mentee: false");
+        assertEq(mentees.menteesAddress, mentee, "Incorrect menteesAddress");
+        assertEq(mentees.name, "TestMentee", "Incorrect name");
+        assertEq(mentees.expertise, "Test Mentee Expertise", "Incorrect expertise");
+        assertEq(mentees.yearsOfExperience, 0, "Incorect years of exp");
+        assertEq(mentees.bioMessage, "Test Mentee Bio", "Incorrect bio message");
+        assertEq(mentees.hasMentor, false, "should be false initally");
+        assertEq(mentees.mentorsAddress, address(0), "Should be address(0) initially");
+        assertEq(mentees.menteeHasPlan, false, "Should be false initially");
     }
 
     function testUpdateMentorInfo() public {
         vm.prank(mentor);
         subm.updateMentorInfo("2 TestMentor", "2 Test Mentor Expertise", 12, "2 Test Mentor Bio");
 
-        (
-            bool isMentor, 
-            address mentorsAddress_, 
-            string memory name, 
-            string memory expertise, 
-            uint256 yearsOfExperience, 
-            string memory bioMessage, 
-            address[] memory openSlotsForMentees
-        ) = subm.getMentorProfile(mentor);
+        SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
 
-        assertEq(isMentor, true, "Is not Mentor: False");
-        assertEq(mentorsAddress_, mentor, "Incorrect mentorsAddress");
-        assertEq(name, "2 TestMentor", "Incorrect name");
-        assertEq(expertise, "2 Test Mentor Expertise", "Incorrect Expertise");
-        assertEq(yearsOfExperience, 12, "Incorrect years of exp");
-        assertEq(bioMessage, "2 Test Mentor Bio", "Incorrect Mentor Bio");
-        assertEq(openSlotsForMentees.length, 0, "Open slots count should be 10");
+        assertEq(mentors.isMentor, true, "Is not Mentor: False");
+        assertEq(mentors.mentorsAddress, mentor, "Incorrect mentorsAddress");
+        assertEq(mentors.name, "2 TestMentor", "Incorrect name");
+        assertEq(mentors.expertise, "2 Test Mentor Expertise", "Incorrect Expertise");
+        assertEq(mentors.yearsOfExperience, 12, "Incorrect years of exp");
+        assertEq(mentors.bioMessage, "2 Test Mentor Bio", "Incorrect Mentor Bio");
+        assertEq(mentors.OpenSlotsForMentees.length, 0, "Open slots count is 10, but current length of array is 0");
     }
 
     function testUpdateMenteeInfo() public {
         vm.prank(mentee);
         subm.updateMenteeInfo("2 TestMentee", "2 Test Mentee Expertise", 2, "2 Test Mentee Bio");
 
-        (
-            bool isMentee, 
-            address menteesAddress_, 
-            string memory name, 
-            string memory expertise, 
-            uint256 yearsOfExperience, 
-            string memory bioMessage, 
-            bool hasMentor,
-            address mentorsAddress,
-            bool menteeHasPlan
-        ) = subm.getMenteeProfile(mentee);
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
 
-        assertEq(isMentee, true, "Is not mentee: false");
-        assertEq(menteesAddress_, mentee, "Incorrect menteesAddress");
-        assertEq(name, "2 TestMentee", "Incorrect name");
-        assertEq(expertise, "2 Test Mentee Expertise", "Incorrect expertise");
-        assertEq(yearsOfExperience, 2, "Incorect years of exp");
-        assertEq(bioMessage, "2 Test Mentee Bio", "Incorrect bio message");
-        assertEq(hasMentor, false, "should be false initally");
-        assertEq(mentorsAddress, address(0), "Should be address(0) initially");
-        assertEq(menteeHasPlan, false, "Should be false initially");
+
+        assertEq(mentees.isMentee, true, "Is not mentee: false");
+        assertEq(mentees.menteesAddress, mentee, "Incorrect menteesAddress");
+        assertEq(mentees.name, "2 TestMentee", "Incorrect name");
+        assertEq(mentees.expertise, "2 Test Mentee Expertise", "Incorrect expertise");
+        assertEq(mentees.yearsOfExperience, 2, "Incorect years of exp");
+        assertEq(mentees.bioMessage, "2 Test Mentee Bio", "Incorrect bio message");
+        assertEq(mentees.hasMentor, false, "should be false initally");
+        assertEq(mentees.mentorsAddress, address(0), "Should be address(0) initially");
+        assertEq(mentees.menteeHasPlan, false, "Should be false initially");
     }
 
     function testCallconfirmMentee() public returns(bool) {
         vm.prank(mentor);
-
         subm.confirmMentee(mentee);
 
+        SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
+        uint256 expectedLength = 1;
+
+        console.log("mentors.OpenSlotsForMentees.length", mentors.OpenSlotsForMentees.length);
+        assertEq(mentors.OpenSlotsForMentees.length, expectedLength, "array length is not as expected");
+        
         bool result = false;
         for (uint256 i = 0; i < subm.getOpenSlotsForMenteesArray(mentor).length; i++) {
             if (subm.getOpenSlotsForMenteesArray(mentor)[i] == mentee) {
@@ -230,24 +201,23 @@ contract Web3DevMentorTest is Test {
     // testCreateMentorshipAndBuySubscription
     function testCreateMentorshipAndBuySubscription() public {
         // SET UP
-        SubscriptionManager.Mentor memory mentors = subm.getMentorWithAddress();
-        SubscriptionManager.Mentee memory mentees = subm.getPlanWithId(0);
-        uint256 planId1 = 1; // we will be using plan 1 for the test
-
-        // create mentorship part of the test
-        // step0 - mentor as to confirm mentee
         vm.prank(mentor);
         subm.confirmMentee(mentee);
-        subm.confirmMentee(mentee2);
-        vm.stopPrank();
 
-        console.log("OpenSlotsForMentees.length of given mentor", subm.mentors[msg.sender].OpenSlotsForMentees.length);
+        SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
 
+        console.log("mentor info", mentors.name);
+        console.log("mentee info", mentees.hasMentor);
+        
+        uint256 planId1 = 1; // we will be using plan 1 for the test
+        
+        // create mentorship part of the test
         // step1 - call CreateMentorshipAndBuySubscription
         vm.prank(mentee);
         subm.CreateMentorshipAndBuySubscription(mentee, mentor, planId1);
 
-        // // step2 - check if mentee's .hasMentor = true
+        // // // step2 - check if mentee's .hasMentor = true
         // assertEq(subm.mentees[mentee].hasMentor, true, "mentee.hasMentor should be true");
 
         // // // step3 - check if mentee's mentorsAddress = mentor

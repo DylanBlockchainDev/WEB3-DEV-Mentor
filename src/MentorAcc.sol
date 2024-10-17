@@ -49,10 +49,10 @@ contract MentorAcc {
     function confirmMentee(address menteesAddress) external onlyMentor {
         // mentor will pass in mentee’s address to be confirmed.
         require(msg.sender == mentors[msg.sender].mentorsAddress, "Caller must be mentor");
-
         require(mentors[msg.sender].OpenSlotsForMentees.length < MAX_MENTEES_PER_MENTOR, "No slots available");
 
         mentors[msg.sender].OpenSlotsForMentees.push(menteesAddress);
+        // console.log(mentors[msg.sender].OpenSlotsForMentees.length);
     }
 
     function updateMentorInfo(
@@ -76,4 +76,6 @@ contract MentorAcc {
     function getOpenSlotsForMenteesArray(address mentorsAddress) public view returns (address[] memory) {
         return mentors[mentorsAddress].OpenSlotsForMentees;
     }
+
+
 }
