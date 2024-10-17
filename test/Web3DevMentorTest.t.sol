@@ -10,16 +10,20 @@ contract Web3DevMentorTest is Test {
     address public mentor;
     address public mentee;
     ERC20Mock public weth;
+    ERC20Mock public beth;
+    ERC20Mock public meth;
 
     function setUp() public {
         wdm = new SubscriptionManager();
         weth = new ERC20Mock();
+        beth = new ERC20Mock();
+        meth = new ERC20Mock();
 
         // Create mock SubPlans
         // have to create mock token.
-        wdm.createPlan(address(weth), 100, 30 days);
+        wdm.createPlan(address(beth), 100, 30 days);
         wdm.createPlan(address(weth), 600, 180 days);
-        wdm.createPlan(address(weth), 1200, 1 years);
+        wdm.createPlan(address(meth), 1200, 365 days);
 
         // Create mock accounts
         mentor = address(1);
@@ -149,13 +153,78 @@ contract Web3DevMentorTest is Test {
     }
 
     // testCreatPlan - partial with setUp()
-    function testCreatPlan() public {
-        // you created mock plans, now test to see if plans were correctly created!!!
+    function testCreatPlan() public view {
+        console.log("SubscriptionManager addr - ", address(wdm));
+        console.log("test contract addr - ", address(this));
+
+        // Check if the correct number of plans were created
+        uint256 expectedNumberOfPlans = 3;
+        assertEq(wdm.nextPlanId(), expectedNumberOfPlans, "Incorrect number of plans created");
+
+        // Iterate through the plans and verify their properties
+        for (uint256 i = 0; i < wdm.nextPlanId(); i++) {
+            SubscriptionManager.Plan memory plan = wdm.getPlanWithId(i);
+
+            console.log("plan.merchant - ", plan.merchant);
+            console.log("plan.token - ", plan.token);
+            console.log("plan.amount - ", plan.amount);
+            console.log("plan.frequency - ", plan.frequency);
+            
+            assertEq(plan.merchant, address(this), "Plan merchant should be the deployer of SubscriptionManager contract - (which in this case is this test contract)");
+            // assertEq(plan.token, address(weth) || address(beth) || address(meth), "Plan token should be the mock WETH token");
+
+            address expectedToken;
+            uint256 expectedAmount;
+            uint256 expectedFrequency;
+
+            if (i == 0) {
+                expectedToken = address(beth);
+                expectedAmount = 100;
+                expectedFrequency = 30 days;
+            } else if (i == 1) {
+                expectedToken = address(weth);
+                expectedAmount = 600;
+                expectedFrequency = 180 days;
+            } else {
+                expectedToken = address(meth);
+                expectedAmount = 1200;
+                expectedFrequency = 365 days;
+            }
+
+            assertEq(plan.token, expectedToken, "Plan token is not expected mock token");
+            assertEq(plan.amount, expectedAmount, "Incorrect plan amount");
+            assertEq(plan.frequency, expectedFrequency, "Incorrect plan frequency");
+        }
+
     }
 
+    function testCreatePlanWithInvalidInput1() public {
+        vm.expectRevert("address cannot be null address");
+        wdm.createPlan(address(0), 100, 30 days);
+    }
+
+    function testCreatePlanWithInvalidInput2() public {
+        vm.expectRevert("amount needs to be > 0");
+        wdm.createPlan(address(beth), 0, 30 days);
+    }
+
+    function testCreatePlanWithInvalidInput3() public {
+        vm.expectRevert("frequency needs to be > 0");
+        wdm.createPlan(address(beth), 100, 0);
+    } 
+
     // testDeletePlan - partial with setUp()
+    function testDeletePlan() public {
+        SubscriptionManager.Plan memory plan = wdm.getPlanWithId(0);
+        console.log("Plan 0", plan.token, plan.amount, plan.frequency);
+
+        uint256 testPlanId = 0; // out of 0,1,2
+        wdm.deletePlan(testPlanId);
+
+        uint256 expectedNumberOfPlans = 2;
+        assertEq(wdm.nextPlanId(), expectedNumberOfPlans, "Incorrect number of plans created");
+    }
 
     // testCreateMentorshipAndBuySubscription
     // testEndMentorshipAndCancelSubscription
-
 }

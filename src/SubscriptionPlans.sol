@@ -40,7 +40,6 @@ contract SubscriptionPlans is Ownable{
         require(token != address(0), "address cannot be null address");
         require(amount > 0, "amount needs to be > 0");
         require(frequency > 0, "frequency needs to be > 0");
-
         plans[nextPlanId] = Plan(msg.sender, token, amount, frequency);
         nextPlanId++;
         emit PlanCreated(msg.sender);
@@ -102,5 +101,10 @@ contract SubscriptionPlans is Ownable{
 
         emit PaymentSent(subscriber, subscription.mentor, plan.merchant, plan.amount, planId, block.timestamp);
         subscription.nextPayment = subscription.nextPayment + plan.frequency;
+    }
+
+    // Getter functions
+    function getPlanWithId(uint256 planId) public view returns (Plan memory) {
+        return plans[planId];
     }
 }

@@ -50,7 +50,7 @@ contract MenteeAcc {
         uint256 newYearsOfExperience,
         string memory newBioMessage
     ) external onlyMentee {
-        // might remove, should have to have a mentor in order to update info.
+        // might remove, shouldn't have to have a mentor in order to update info.
         // require(!mentees[msg.sender].hasMentor, "Mentee does not have mentor yet");
 
         mentees[msg.sender] = Mentee({
