@@ -101,50 +101,12 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
 
     //////////////////////////////////////////
 
-    function getMenteeProfile(address menteesAddress) public view returns (
-        bool isMentee,
-        address menteesAddress_,
-        string memory name,
-        string memory expertise,
-        uint256 yearsOfExperience,
-        string memory bioMessage,
-        bool hasMentor,
-        address mentorsAddress,
-        bool menteeHasPlan
-    ) {
-        Mentee storage mentee = mentees[menteesAddress];
-        return (
-            mentee.isMentee,
-            mentee.menteesAddress,
-            mentee.name,
-            mentee.expertise,
-            mentee.yearsOfExperience,
-            mentee.bioMessage,
-            mentee.hasMentor,
-            mentee.mentorsAddress,
-            mentee.menteeHasPlan
-        );
+    function getMenteeProfile(address menteesAddress) public view returns (Mentee memory) {
+        return mentees[menteesAddress];
     }
 
-    function getMentorProfile(address mentorsAddress) public view returns (
-        bool isMentor,
-        address mentorsAddress_,
-        string memory name,
-        string memory expertise,
-        uint256 yearsOfExperience,
-        string memory bioMessage,
-        address[] memory openSlotsForMentees
-    ) {
-        Mentor storage mentor = mentors[mentorsAddress];
-        return (
-            mentor.isMentor,
-            mentor.mentorsAddress,
-            mentor.name,
-            mentor.expertise,
-            mentor.yearsOfExperience,
-            mentor.bioMessage,
-            mentor.OpenSlotsForMentees
-        );
+    function getMentorProfile(address mentorsAddress) public view returns (Mentor memory) {
+        return mentors[mentorsAddress];
     }
 
     function getMenteeCountOfMentor(address mentorsAddress) external view returns (uint256) {

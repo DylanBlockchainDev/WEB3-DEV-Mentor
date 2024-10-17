@@ -76,8 +76,4 @@ contract MentorAcc {
     function getOpenSlotsForMenteesArray(address mentorsAddress) public view returns (address[] memory) {
         return mentors[mentorsAddress].OpenSlotsForMentees;
     }
-
-    function getMentorWithAddress(address mentorsAddress) public view returns (struct Mentor) {
-        return mentors[mentorsAddress];
-    }
 }
