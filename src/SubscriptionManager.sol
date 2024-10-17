@@ -53,11 +53,11 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
         payable
         onlyMentee
     {
+        require(mentorsAddress == mentees[menteesAddress].mentorsAddress, "passed in mentorsAddress is not the mentee's mentor address");
+
         bool mentorshipCreated = createMentorship(menteesAddress, mentorsAddress);
         require(mentorshipCreated, "Failed to create mentorship");
-        // menteeBuysSubscription(planId);
 
-        // address mentorsAddress = mentees[msg.sender].mentorsAddress;
         subscribe(planId, mentorsAddress);
     }
 

@@ -50,8 +50,6 @@ contract MentorAcc {
         // mentor will pass in mentee’s address to be confirmed.
         require(msg.sender == mentors[msg.sender].mentorsAddress, "Caller must be mentor");
 
-        console.log("OpenSlotsForMentees.length of given mentor", mentors[msg.sender].OpenSlotsForMentees.length);
-
         require(mentors[msg.sender].OpenSlotsForMentees.length < MAX_MENTEES_PER_MENTOR, "No slots available");
 
         mentors[msg.sender].OpenSlotsForMentees.push(menteesAddress);
@@ -77,5 +75,9 @@ contract MentorAcc {
     // has to stay here
     function getOpenSlotsForMenteesArray(address mentorsAddress) public view returns (address[] memory) {
         return mentors[mentorsAddress].OpenSlotsForMentees;
+    }
+
+    function getMentorWithAddress(address mentorsAddress) public view returns (struct Mentor) {
+        return mentors[mentorsAddress];
     }
 }
