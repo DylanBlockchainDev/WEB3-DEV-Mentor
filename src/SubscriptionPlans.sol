@@ -62,8 +62,14 @@ contract SubscriptionPlans is Ownable{
         require(plan.merchant != address(0), "this plan does not exist");
         require(plan.token != address(0), "Invalid token address");
 
-        bool success1 = token.transferFrom(msg.sender, plan.merchant, plan.amount * 20 / 100); // Owner receives 20%
-        bool success2 = token.transferFrom(msg.sender, mentor, plan.amount * 80 / 100); // Menotr receives 80%
+        uint256 amount = plan.amount;
+        uint256 splitRatio = 20;
+
+        uint256 merchantAmount = amount * splitRatio / 100;
+        uint256 mentorAmount = amount - merchantAmount;
+
+        bool success1 = token.transferFrom(msg.sender, plan.merchant, merchantAmount); // Owner receives 20%
+        bool success2 = token.transferFrom(msg.sender, mentor, mentorAmount); // Menotr receives 80%
 
         if (!success1 || !success2) {
             // Revert if either transfer fails
