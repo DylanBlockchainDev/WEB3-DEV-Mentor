@@ -107,4 +107,8 @@ contract SubscriptionPlans is Ownable{
     function getPlanWithId(uint256 planId) public view returns (Plan memory) {
         return plans[planId];
     }
+
+    function getSubscription(address subscriber, uint256 planId) public view returns (Subscription memory) {
+        return subscriptions[subscriber][planId];
+    }
 }

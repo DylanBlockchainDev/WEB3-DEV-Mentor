@@ -34,7 +34,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
 
     // mentorship is created which is needed for mentee buying a subscription.
     function createMentorship(address menteesAddress, address mentorsAddress) internal returns (bool) {
-        require(!mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
+        require(mentees[menteesAddress].hasMentor == false, "Mentee already has a Mentor");
         require(checkAddressInArray(mentorsAddress, menteesAddress), "Mentee's address has not been confirmed");
 
         // Set mentee's struct value 'hasMentor' to true
