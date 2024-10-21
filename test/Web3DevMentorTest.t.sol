@@ -282,6 +282,8 @@ contract Web3DevMentorTest is Test {
     function testEndMentorshipAndCancelSubscription() public {
         // SET UP for this test will just be calling the testCreateMentorshipAndBuySubscription test.
         testCreateMentorshipAndBuySubscription();
+        testCreateMentorshipAndBuySubscription();
+        testCreateMentorshipAndBuySubscription();
 
         uint256 planId1 = 1; // we will be using the second plan for the test
         
