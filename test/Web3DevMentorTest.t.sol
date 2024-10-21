@@ -8,7 +8,9 @@ import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/token/ERC20M
 contract Web3DevMentorTest is Test {
     SubscriptionManager public subm;
     address public mentor;
-    address public mentee;
+    address public mentee1;
+    address public mentee2;
+    address public mentee3;
     ERC20Mock public weth;
     ERC20Mock public beth;
     ERC20Mock public meth;
@@ -30,25 +32,39 @@ contract Web3DevMentorTest is Test {
 
         // Create mock accounts
         mentor = address(1);
-        mentee = address(2);
+        mentee1 = address(2);
+        mentee2 = address(3);
+        mentee3 = address(4);
         
         testBalances[address(this)] = TESTING_BALANCE;
         testBalances[mentor] = TESTING_BALANCE;
-        testBalances[mentee] = TESTING_BALANCE;
+        testBalances[mentee1] = TESTING_BALANCE;
+        testBalances[mentee2] = TESTING_BALANCE;
+        testBalances[mentee3] = TESTING_BALANCE;
 
         vm.deal(address(this), TESTING_BALANCE);
         vm.deal(mentor, TESTING_BALANCE);
-        vm.deal(mentee, TESTING_BALANCE);
+        vm.deal(mentee1, TESTING_BALANCE);
+        vm.deal(mentee2, TESTING_BALANCE);
+        vm.deal(mentee3, TESTING_BALANCE);
 
         ERC20Mock(weth).mint(address(this), TESTING_BALANCE);
         ERC20Mock(weth).mint(mentor, TESTING_BALANCE);
-        ERC20Mock(weth).mint(mentee, TESTING_BALANCE);
+        ERC20Mock(beth).mint(mentee1, TESTING_BALANCE);
+        ERC20Mock(weth).mint(mentee2, TESTING_BALANCE);
+        ERC20Mock(meth).mint(mentee3, TESTING_BALANCE);
 
         vm.prank(mentor);
         subm.createMentorAccount("TestMentor", "Test Mentor Expertise", 10, "Test Mentor Bio");
 
-        vm.prank(mentee);
-        subm.createMenteeAccount("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
+        vm.prank(mentee1);
+        subm.createMenteeAccount("TestMentee1", "Test Mentee1 Expertise", 0, "Test Mentee1 Bio");
+
+        vm.prank(mentee2);
+        subm.createMenteeAccount("TestMentee2", "Test Mentee2 Expertise", 0, "Test Mentee2 Bio");
+
+        vm.prank(mentee3);
+        subm.createMenteeAccount("TestMentee3", "Test Mentee3 Expertise", 0, "Test Mentee3 Bio");
     }
 
     // Helper Function
@@ -76,15 +92,15 @@ contract Web3DevMentorTest is Test {
         // vm.prank(mentee);
         // subm.signUpAsMentee("TestMentee", "Test Mentee Expertise", 0, "Test Mentee Bio");
 
-        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee1);
 
 
         assertEq(mentees.isMentee, true, "Is not mentee: false");
-        assertEq(mentees.menteesAddress, mentee, "Incorrect menteesAddress");
-        assertEq(mentees.name, "TestMentee", "Incorrect name");
-        assertEq(mentees.expertise, "Test Mentee Expertise", "Incorrect expertise");
+        assertEq(mentees.menteesAddress, mentee1, "Incorrect menteesAddress");
+        assertEq(mentees.name, "TestMentee1", "Incorrect name");
+        assertEq(mentees.expertise, "Test Mentee1 Expertise", "Incorrect expertise");
         assertEq(mentees.yearsOfExperience, 0, "Incorect years of exp");
-        assertEq(mentees.bioMessage, "Test Mentee Bio", "Incorrect bio message");
+        assertEq(mentees.bioMessage, "Test Mentee1 Bio", "Incorrect bio message");
         assertEq(mentees.hasMentor, false, "should be false initally");
         assertEq(mentees.mentorsAddress, address(0), "Should be address(0) initially");
         assertEq(mentees.menteeHasPlan, false, "Should be false initially");
@@ -106,14 +122,14 @@ contract Web3DevMentorTest is Test {
     }
 
     function testUpdateMenteeInfo() public {
-        vm.prank(mentee);
+        vm.prank(mentee1);
         subm.updateMenteeInfo("2 TestMentee", "2 Test Mentee Expertise", 2, "2 Test Mentee Bio");
 
-        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee1);
 
 
         assertEq(mentees.isMentee, true, "Is not mentee: false");
-        assertEq(mentees.menteesAddress, mentee, "Incorrect menteesAddress");
+        assertEq(mentees.menteesAddress, mentee1, "Incorrect menteesAddress");
         assertEq(mentees.name, "2 TestMentee", "Incorrect name");
         assertEq(mentees.expertise, "2 Test Mentee Expertise", "Incorrect expertise");
         assertEq(mentees.yearsOfExperience, 2, "Incorect years of exp");
@@ -125,7 +141,7 @@ contract Web3DevMentorTest is Test {
 
     function testCallconfirmMentee() public returns(bool) {
         vm.prank(mentor);
-        subm.confirmMentee(mentee);
+        subm.confirmMentee(mentee1);
 
         SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
         uint256 expectedLength = 1;
@@ -135,7 +151,7 @@ contract Web3DevMentorTest is Test {
         
         bool result = false;
         for (uint256 i = 0; i < subm.getOpenSlotsForMenteesArray(mentor).length; i++) {
-            if (subm.getOpenSlotsForMenteesArray(mentor)[i] == mentee) {
+            if (subm.getOpenSlotsForMenteesArray(mentor)[i] == mentee1) {
                 result = true;
                 break;
             }
@@ -218,92 +234,102 @@ contract Web3DevMentorTest is Test {
 
     // testCreateMentorshipAndBuySubscription
     function testCreateMentorshipAndBuySubscription() public {
-        // SET UP
-        vm.prank(mentor);
-        subm.confirmMentee(mentee);
+        // Create mentorship and buy subscription for multiple mentees
+        for (uint256 i = 0; i <= 2; i++) {
+            address mentee = i == 0 ? mentee1 : i == 1 ? mentee2 : mentee3;
+            ERC20Mock token = i == 0 ? beth : i == 1 ? weth : meth;
+            uint256 price = i == 0 ? 100 : i == 1 ? 600 : 1200;
 
-        uint256 planId1 = 1; // we will be using the second plan for the test
-        uint256 expectedStart = 1;                                   
-        uint256 expectedNextPayment = 180 days + 1 seconds; 
+            // console.log("mentee", mentee);
 
-        uint256 initialMenteeBalance = testBalances[mentee];
-        uint256 initialMentorBalance = testBalances[mentor];
-        uint256 initialWeb3DevMentorTestBalance = testBalances[address(this)];
+            // SET UP
+            vm.prank(mentor);
+            subm.confirmMentee(mentee);
 
-        // console.log("initialMenteeBalance", initialMenteeBalance);
-        // console.log("initialMentorBalance", initialMentorBalance);
-        // console.log("initialWeb3DevMentorTestBalance", initialWeb3DevMentorTestBalance);
+            uint256 initialMenteeBalance = testBalances[mentee];
+            uint256 initialMentorBalance = testBalances[mentor];
+            uint256 initialWeb3DevMentorTestBalance = testBalances[address(this)];
 
-        // Approve the merchant to spend up to 600 tokens
-        vm.prank(mentee);
-        weth.approve(address(subm), 600);
-        
-        // step1 - call CreateMentorshipAndBuySubscription
-        vm.prank(mentee);
-        subm.CreateMentorshipAndBuySubscription(mentee, mentor, planId1);
+            // console.log("initialMenteeBalance", initialMenteeBalance);
+            // console.log("initialMentorBalance", initialMentorBalance);
+            // console.log("initialWeb3DevMentorTestBalance", initialWeb3DevMentorTestBalance);
 
-        // SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
-        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
-        SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee, planId1);
+            vm.prank(mentee);
+            token.approve(address(subm), price);
 
-        // // step2 - check if mentee's .hasMentor = true
-        assertEq(mentees.hasMentor, true, "mentee.hasMentor should be true");
+            // Check if the allowance was set correctly
+            assertEq(token.allowance(mentee, address(subm)), price, "Allowance not set correctly");
+            
+            // step1 - call CreateMentorshipAndBuySubscription
+            vm.prank(mentee);
+            subm.CreateMentorshipAndBuySubscription(mentee, mentor, i);
 
-        // // step3 - check if mentee's mentorsAddress = mentor
-        assertEq(mentees.mentorsAddress, mentor, "mentee's mentorsAddress is not expected mentor's address");
+            // SubscriptionManager.Mentor memory mentors = subm.getMentorProfile(mentor);
+            SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
+            SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee, i);
+            // console.log("mentee", mentee);
 
-        // step5 - check for successful payment transfers
-        // console.log() balances of mentor and subm before
-        // console.log() balances of mentor and subm after
-        // Get final balances
-        uint256 finalMenteeBalance = testBalances[mentee] - 600;
+            // // step2 - check if mentee's .hasMentor = true
+            assertEq(mentees.hasMentor, true, "mentee.hasMentor should be true");
 
-        uint256 finalMentorBalance = testBalances[mentor] + 480;
-        uint256 finalWeb3DevMentorTestBalance = testBalances[address(this)] + 120;
+            // // step3 - check if mentee's mentorsAddress = mentor
+            assertEq(mentees.mentorsAddress, mentor, "mentee's mentorsAddress is not expected mentor's address");
 
-        // console.log("finalMenteeBalance", finalMenteeBalance);
-        // console.log("finalMentorBalance", finalMentorBalance);
-        // console.log("finalWeb3DevMentorTestBalance", finalWeb3DevMentorTestBalance);
+            // step5 - check for successful payment transfers
+            // console.log() balances of mentor and subm before
+            // console.log() balances of mentor and subm after
+            // Get final balances
+            uint256 finalMenteeBalance = testBalances[mentee] - price;
+            uint256 finalMentorBalance = testBalances[mentor] + (price * 8 / 10);
+            uint256 finalWeb3DevMentorTestBalance = testBalances[address(this)] + (price * 2 / 10);
 
-        // Verify balances changed as expected
-        assertEq(finalMenteeBalance, initialMenteeBalance - 600, "Mentee didn't spend WETH");
-        assertEq(finalMentorBalance, initialMentorBalance + 480, "Mentor didn't receive WETH");
-        assertEq(finalWeb3DevMentorTestBalance, initialWeb3DevMentorTestBalance + 120, "Web3DevMentorTest / merchant didn't recive WETH");
+            // console.log("finalMenteeBalance", finalMenteeBalance);
+            // console.log("finalMentorBalance", finalMentorBalance);
+            // console.log("finalWeb3DevMentorTestBalance", finalWeb3DevMentorTestBalance);
 
-        // LATER!!!
-        // step6 - check is subscription was successfully created and added to subscriptions array 
-        assertEq(subscription.subscriber, mentee, "not expected subscriber address"); // expected subscriber address
-        assertEq(subscription.mentor, mentor, "not expected mentor address"); // expected mentor
-        assertEq(subscription.start, expectedStart, "not expected start time"); // expected start
-        assertEq(subscription.nextPayment, expectedNextPayment, "not expected nextPayment"); // expected nextPayment
+            // Verify balances changed as expected
+            assertEq(finalMenteeBalance, initialMenteeBalance - price, "Mentee didn't spend token");
+            assertEq(finalMentorBalance, initialMentorBalance + (price * 8 / 10), "Mentor didn't receive token");
+            assertEq(finalWeb3DevMentorTestBalance, initialWeb3DevMentorTestBalance + (price * 2 / 10), "Web3DevMentorTest / merchant didn't recive token");
+
+            // step6 - check is subscription was successfully created and added to subscriptions array 
+            assertEq(subscription.subscriber, mentee, "not expected subscriber address"); // expected subscriber address
+            assertEq(subscription.mentor, mentor, "not expected mentor address"); // expected mentor
+            assertEq(subscription.start, 1, "not expected start time"); // expected start
+            uint256 expectedNextPayment = i == 0 ? 30 days : i == 1 ? 180 days : 365 days;
+            assertEq(subscription.nextPayment, expectedNextPayment + 1 seconds, "not expected nextPayment"); // expected nextPayment
+        }
     }
 
     // testEndMentorshipAndCancelSubscription
     function testEndMentorshipAndCancelSubscription() public {
         // SET UP for this test will just be calling the testCreateMentorshipAndBuySubscription test.
         testCreateMentorshipAndBuySubscription();
-        testCreateMentorshipAndBuySubscription();
-        testCreateMentorshipAndBuySubscription();
 
-        uint256 planId1 = 1; // we will be using the second plan for the test
-        
-        // Secondly call the EndMentorshipAndCancelSubscription function.
-        // vm.prank(mentee); // both mentee and mentor can call this function.
-        vm.prank(mentor); // both mentee and mentor can call this function.
-        subm.EndMentorshipAndCancelSubscription(planId1, mentee, mentor);
-        
-        // Thirdly check if the changes were reversed.
-        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
-        SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee, planId1);
-        assertEq(subscription.start, 0, "subscription was not removed");
-        
-        assertEq(mentees.hasMentor, false, "mentee.hasMentor should be false");
-        assertEq(mentees.mentorsAddress, address(0), "mentee's mentorsAddress is not expected address(0)");
+        for (uint256 i = 0; i <= 2; i++) {
+            address mentee = i == 0 ? mentee1 : i == 1 ? mentee2 : mentee3;
 
-        bool IsMenteeInArray = subm.getCheckIfMenteesAddressInOpenSlotsForMenteesArray(mentor, mentee);
-        assertEq(IsMenteeInArray, false, "mentee has not been removed from OpenSlotsForMenteesArray");
+            // Secondly call the EndMentorshipAndCancelSubscription function.
+            // vm.prank(mentee); // both mentee and mentor can call this function.
+            vm.prank(mentor); // both mentee and mentor can call this function.
+            subm.EndMentorshipAndCancelSubscription(i, mentee, mentor);
+            
+            // Thirdly check if the changes were reversed.
+            SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
+            SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee, i);
+            assertEq(subscription.start, 0, "subscription was not removed");
+            
+            assertEq(mentees.hasMentor, false, "mentee.hasMentor should be false");
+            assertEq(mentees.mentorsAddress, address(0), "mentee's mentorsAddress is not expected address(0)");
 
-        uint256 menteeCountOfMentor = subm.getMenteeCountOfMentor(mentor);
-        assertEq(menteeCountOfMentor, 0, "menteeCountOfMentor is not 0 as expected");
+            bool IsMenteeInArray = subm.getCheckIfMenteesAddressInOpenSlotsForMenteesArray(mentor, mentee);
+            assertEq(IsMenteeInArray, false, "mentee has not been removed from OpenSlotsForMenteesArray");
+
+            uint256 expectedCount = 3 - (i + 1); // Adjusted calculation
+            uint256 menteeCountOfMentor = subm.getMenteeCountOfMentor(mentor);
+            assertEq(menteeCountOfMentor, expectedCount, "menteeCountOfMentor is not 0 as expected");
+        }
     }
+
+    function testPayRecurring() public {}
 }
