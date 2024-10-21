@@ -222,7 +222,7 @@ contract Web3DevMentorTest is Test {
         vm.prank(mentor);
         subm.confirmMentee(mentee);
 
-        uint256 planId1 = 1; // we will be using plan 2 for the test
+        uint256 planId1 = 1; // we will be using the second plan for the test
         uint256 expectedStart = 1;                                   
         uint256 expectedNextPayment = 180 days + 1 seconds; 
 
@@ -279,4 +279,29 @@ contract Web3DevMentorTest is Test {
     }
 
     // testEndMentorshipAndCancelSubscription
+    function testEndMentorshipAndCancelSubscription() public {
+        // SET UP for this test will just be calling the testCreateMentorshipAndBuySubscription test.
+        testCreateMentorshipAndBuySubscription();
+
+        uint256 planId1 = 1; // we will be using the second plan for the test
+        
+        // Secondly call the EndMentorshipAndCancelSubscription function.
+        // vm.prank(mentee); // both mentee and mentor can call this function.
+        vm.prank(mentor); // both mentee and mentor can call this function.
+        subm.EndMentorshipAndCancelSubscription(planId1, mentee, mentor);
+        
+        // Thirdly check if the changes were reversed.
+        SubscriptionManager.Mentee memory mentees = subm.getMenteeProfile(mentee);
+        SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee, planId1);
+        assertEq(subscription.start, 0, "subscription was not removed");
+        
+        assertEq(mentees.hasMentor, false, "mentee.hasMentor should be false");
+        assertEq(mentees.mentorsAddress, address(0), "mentee's mentorsAddress is not expected address(0)");
+
+        bool IsMenteeInArray = subm.getCheckIfMenteesAddressInOpenSlotsForMenteesArray(mentor, mentee);
+        assertEq(IsMenteeInArray, false, "mentee has not been removed from OpenSlotsForMenteesArray");
+
+        uint256 menteeCountOfMentor = subm.getMenteeCountOfMentor(mentor);
+        assertEq(menteeCountOfMentor, 0, "menteeCountOfMentor is not 0 as expected");
+    }
 }

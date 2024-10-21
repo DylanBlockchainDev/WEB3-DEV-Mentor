@@ -83,11 +83,11 @@ contract SubscriptionPlans is Ownable{
         emit SubscriptionCreated(msg.sender, mentor, planId, block.timestamp);
     }
 
-    function cancel(uint256 planId) internal {
-        Subscription storage subscription = subscriptions[msg.sender][planId];
+    function cancel(uint256 planId, address subscriber) internal {
+        Subscription storage subscription = subscriptions[subscriber][planId];
         require(subscription.subscriber != address(0), "this subscription does not exist");
-        delete subscriptions[msg.sender][planId];
-        emit SubscriptionCancelled(msg.sender, planId, block.timestamp);
+        delete subscriptions[subscriber][planId];
+        emit SubscriptionCancelled(subscriber, planId, block.timestamp);
     }
 
     function pay(address subscriber, uint256 planId) external {

@@ -63,7 +63,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
 
 
     function EndMentorshipAndCancelSubscription(uint256 planId, address menteesAddress, address mentorsAddress)
-        internal
+        public
         onlyMentorOrMentee
     {
         require(mentees[menteesAddress].hasMentor == true, "Menotrship already doesn't exist");
@@ -94,7 +94,7 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
             mentors[mentorsAddress].OpenSlotsForMentees.pop();
         }
 
-        cancel(planId);
+        cancel(planId, menteesAddress);
 
         emit SubscriptionCancelledAndEndedMentorship(planId, menteesAddress, mentorsAddress);
     }
@@ -107,6 +107,10 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
 
     function getMentorProfile(address mentorsAddress) public view returns (Mentor memory) {
         return mentors[mentorsAddress];
+    }
+
+    function getCheckIfMenteesAddressInOpenSlotsForMenteesArray(address mentorsAddress, address menteesAddress) public view returns (bool) {
+        return checkAddressInArray(mentorsAddress, menteesAddress);
     }
 
     function getMenteeCountOfMentor(address mentorsAddress) external view returns (uint256) {
