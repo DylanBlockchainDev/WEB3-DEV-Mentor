@@ -90,12 +90,7 @@ contract SubscriptionPlans is Ownable{
         emit SubscriptionCancelled(subscriber, planId, block.timestamp);
     }
 
-    modifier onlyMentee() {
-        require(msg.sender == mentees[msg.sender].menteesAddress, "Caller must be mentee");
-        _;
-    }
-
-    function pay(address subscriber, uint256 planId) external onlyMentee {
+    function pay(address subscriber, uint256 planId) internal {
         Subscription storage subscription = subscriptions[subscriber][planId];
         Plan storage plan = plans[planId];
         IERC20 token = IERC20(plan.token);

@@ -331,5 +331,63 @@ contract Web3DevMentorTest is Test {
         }
     }
 
-    function testPayRecurring() public {}
+    function testPayRecurring() public {
+        vm.prank(mentor);
+        subm.confirmMentee(mentee2);
+
+        uint256 initialMenteeBalance = testBalances[mentee2];
+        uint256 initialMentorBalance = testBalances[mentor];
+        uint256 initialWeb3DevMentorTestBalance = testBalances[address(this)];
+
+        vm.prank(mentee2);
+        weth.approve(address(subm), 600);
+
+        
+        vm.prank(mentee2);
+        subm.CreateMentorshipAndBuySubscription(mentee2, mentor, 1);
+
+        SubscriptionManager.Subscription memory subscription = subm.getSubscription(mentee2, 1);
+
+        // Update testBalances after first payment
+        testBalances[mentee2] -= 600;
+        testBalances[mentor] += 480;
+        testBalances[address(this)] += 120;
+
+        uint256 finalMenteeBalance = testBalances[mentee2];
+        uint256 finalMentorBalance = testBalances[mentor];
+        uint256 finalWeb3DevMentorTestBalance = testBalances[address(this)];
+
+        // Second part
+        // Advance time to the next payment date
+        uint256 nextPaymentDate = subscription.nextPayment + 1 seconds; // = 15552002
+        vm.warp(nextPaymentDate);
+
+        // Approve for another payment
+        vm.prank(mentee2);
+        weth.approve(address(subm), 600);
+
+        // Make the second payment
+        vm.prank(mentee2);
+        subm.Pay(mentee2, 1);
+
+        // Update testBalances after second payment
+        testBalances[mentee2] -= 600;
+        testBalances[mentor] += 480;
+        testBalances[address(this)] += 120;
+
+        // Get updated balances
+        uint256 secondFinalMenteeBalance = testBalances[mentee2]; 
+        uint256 secondFinalMentorBalance = testBalances[mentor]; 
+        uint256 secondFinalWeb3DevMentorTestBalance = testBalances[address(this)]; 
+
+        // Verify balances
+        assertEq(testBalances[mentee2], secondFinalMenteeBalance, "Incorrect mentee balance after second payment");
+        assertEq(testBalances[mentor], secondFinalMentorBalance, "Incorrect mentor balance after second payment");
+        assertEq(testBalances[address(this)], secondFinalWeb3DevMentorTestBalance, "Incorrect merchant balance after second payment");
+
+        // Check if nextPayment has been updated correctly
+        SubscriptionManager.Subscription memory updatedSubscription = subm.getSubscription(mentee2, 1);
+        assertEq(updatedSubscription.nextPayment, nextPaymentDate + 180 days - 1 seconds, "Next payment date not updated correctly");
+    }
+
 }

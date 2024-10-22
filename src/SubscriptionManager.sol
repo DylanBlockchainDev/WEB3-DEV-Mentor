@@ -99,6 +99,10 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
         emit SubscriptionCancelledAndEndedMentorship(planId, menteesAddress, mentorsAddress);
     }
 
+    function Pay(address menteesAddress, uint256 planId) public {
+        pay(menteesAddress, planId);
+    }
+
     //////////////////////////////////////////
 
     function getMenteeProfile(address menteesAddress) public view returns (Mentee memory) {
