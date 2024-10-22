@@ -138,21 +138,4 @@ contract SubscriptionManager is SubscriptionPlans, MentorAcc, MenteeAcc, Reentra
         Subscription storage subscription = subscriptions[subscriber][planId];
         return subscription.nextPayment;
     }    
-
-    function getRemainingPayments(address subscriber, uint256 planId) public view returns (uint256) {
-        // Get the subscription details for the given subscriber and plan
-        Subscription storage subscription = subscriptions[subscriber][planId];
-
-        // Retrieve the plan details for the given plan ID
-        Plan storage plan = plans[planId];
-
-        // Calculate the total number of payments
-        // This is done by summing up the start time and then multiplying the difference between nextPayment and start by the frequency minus one
-        // This formula assumes payments occur at regular intervals
-        uint256 totalPayments = subscription.start + (subscription.nextPayment - subscription.start) * (plan.frequency - 1);
-
-        // Return the difference between the totalPayments and the current block timestamp
-        // This gives us the number of seconds until the next payment is due
-        return totalPayments - block.timestamp;
-    }
 }
