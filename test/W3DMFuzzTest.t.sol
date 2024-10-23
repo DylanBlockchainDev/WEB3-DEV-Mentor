@@ -7,5 +7,5 @@ import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/token/ERC20M
 
 contract W3DMFuzzTest is Test {
     // veriants:
-    // 1. OpenSlotsForMentees must never be higher than 10.
+    // 1. OpenSlotsForMentees must never be higher than 10
 }
